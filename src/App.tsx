@@ -1,7 +1,7 @@
 import { Box } from "@chakra-ui/react";
 
 import Header from "./components/Header";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GoalList from "./components/GoalList";
 import AddGoal from "./components/AddGoal";
 import { CourseGoal } from "./types";
@@ -9,17 +9,26 @@ import { CourseGoal } from "./types";
 function App() {
   const [goals, setGoals] = useState<CourseGoal[]>([]);
 
+  useEffect(() => {
+    const savedGoals = localStorage.getItem("goals");
+    if (savedGoals) setGoals(JSON.parse(savedGoals));
+  }, []);
+
   function handleAddGoal(goal: CourseGoal): void {
     const newGoal = {
       id: Math.random(),
       title: goal.title,
       description: goal.description,
     };
-    setGoals((prev) => [...prev, newGoal]);
+    const newGoalList = [...goals, newGoal];
+    localStorage.setItem("goals", JSON.stringify(newGoalList));
+    setGoals(newGoalList);
   }
 
   function handleDelete(id: number): void {
-    setGoals((prev) => prev.filter((g) => g.id !== id));
+    const newGoalList = goals.filter((g) => g.id !== id);
+    setGoals(newGoalList);
+    localStorage.setItem("goals", JSON.stringify(newGoalList));
   }
   return (
     <>
